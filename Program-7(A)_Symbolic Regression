@@ -1,0 +1,27 @@
+import random
+import numpy as np
+def target(x):
+    return x**3 + x**2 + x
+ops = ['+','-','*']
+def generate(depth):
+    if depth == 0:
+        return random.choice(['x','1','2','3'])
+    op = random.choice(ops)
+    return '(' + generate(depth-1) + op + generate(depth-1) + ')'
+def evaluate(expr,x):
+    return eval(expr)
+def fitness(expr,X,y):
+    pred=[evaluate(expr,i) for i in X]
+    return np.mean((y-pred)**2)
+X=np.linspace(-5,5,20)
+y=target(X)
+population=[generate(2) for _ in range(10)]
+for _ in range(20):
+    population=sorted(population,key=lambda e:fitness(e,X,y))
+    population=population[:5]
+    while len(population)<10:
+        p=random.choice(population)
+        population.append(generate(2))
+best=population[0]
+print("Best Expression:",best)
+print("Error:",fitness(best,X,y))
